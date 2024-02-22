@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Adm\AdminPostsController;
 use App\Http\Controllers\Adm\CategoryController;
 use App\Http\Controllers\Adm\UserController;
 use App\Http\Controllers\PostController;
@@ -16,12 +17,16 @@ use Inertia\Inertia;
 Route::get('/', function(){
     return redirect()->route('posts.index');
 });
+Route::get('posts/mypost', function(){
+    return redirect()->route('posts.index');
+});
 
 Route::middleware('hasrole:moderator')->group(function(){
     
 });
 Route::middleware('auth')->group(function(){
     Route::resource('posts', PostController::class)->only('create', 'edit', 'store', 'destroy', 'update');
+    Route::get('posts/mypost/{user}', [PostController::class, 'index'])->name('posts.myPost');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     Route::post('/posts/{post}', [PostController::class, 'comment'])->name('posts.comment');
     Route::delete('/posts/delete/{comment}', [PostController::class, 'commentDel'])->name('posts.commentDel');
@@ -29,6 +34,7 @@ Route::middleware('auth')->group(function(){
     Route::middleware('hasrole:admin,moderator')->group(function(){
         Route::get('/adm/users', [UserController::class, 'index'])->name('adm.users.index');
         Route::get('/adm/users/{user}', [UserController::class, 'userPosts'])->name('adm.users.userPosts');
+        Route::delete('/adm/users/deleteAllPosts', [UserController::class, 'deleteAll'])->name('adm.users.deleteAll');
         Route::get('/adm/users/showUserPosts/{post}', [UserController::class, 'showUserPosts'])->name('adm.users.showUserPosts');
         Route::delete('/adm/users/showUserPosts/{post}/showPost', [UserController::class, 'delete'])->name('adm.users.delete');
         Route::get('/adm/users/{user}/searchPost', [UserController::class, 'userPosts'])->name('adm.users.searchPost');
@@ -37,8 +43,12 @@ Route::middleware('auth')->group(function(){
         Route::put('/adm/users/{user}', [UserController::class, 'changeRole'])->name('adm.users.changeRole');
         Route::put('/adm/users/{user}/ban', [UserController::class, 'ban'])->name('adm.users.ban');
         Route::put('/adm/users/{user}/unban', [UserController::class, 'unban'])->name('adm.users.unban');
+        //CategoryAdminPanel
         Route::get('/adm/category', [CategoryController::class, 'index'])->name('adm.categories.index');
         Route::post('/adm/category', [CategoryController::class, 'addCategory'])->name('adm.categories.add');
+        //PostsAdminPanel
+        Route::get('/adm/posts', [AdminPostsController::class, 'index'])->name('adm.posts.index');
+        Route::get('/adm/posts/search', [AdminPostsController::class, 'index'])->name('adm.posts.search');
 
     });
 });

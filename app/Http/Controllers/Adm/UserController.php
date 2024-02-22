@@ -22,6 +22,8 @@ class UserController extends Controller
         return view('adm.users', ['users'=>$users]);
     }
 
+
+
     public function userPosts(User $user, Request $req){
         $posts = null;
         if($req->search){
@@ -31,7 +33,7 @@ class UserController extends Controller
             $posts = $user->posts;
         }
         
-        return view('adm.posts', ['posts'=>$posts, 'user'=>$user]);
+        return view('adm.postsUsers', ['posts'=>$posts, 'user'=>$user]);
     }
 
     public function showUserPosts(Post $post){
@@ -68,6 +70,38 @@ class UserController extends Controller
         $this->authorize('delete', $post);
         $post->delete();
         return redirect()->route('adm.users.userPosts', $post->user_id);
+        
+    }
+
+    public function deleteAll(Request $request)
+    {
+        
+        $selectedPosts = $request->input('postid', []);
+        
+        if (!empty($selectedPosts)) {
+            // Ваши действия для удаления выбранных постов
+            foreach ($selectedPosts as $postId) {
+                
+                $post = Post::find($postId);
+                
+                // Проверка, чтобы избежать ошибок, если пост не найден
+                if ($post) {
+                    // Удаление изображения
+                    // ...
+    
+                    // Удаление поста
+                    $post->delete();
+                }
+            }
+            return back();
+        }
+        else{
+            return back()->with('error','Не выбранный пост');
+        }
+        
+        // $this->authorize('delete', $post);
+        // $post->delete();
+        // return redirect()->route('adm.users.userPosts', $post->user_id);
         
     }
 

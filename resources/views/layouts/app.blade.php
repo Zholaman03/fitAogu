@@ -16,8 +16,14 @@
 
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+        integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous">
+    </script>
+    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
 </head>
 
 <body>
@@ -35,17 +41,12 @@
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
-                    <ul class="navbar-nav me-auto">
-                        @isset($categories)
-                        <li class="nav-item">
-                            <a href="{{route('posts.index')}}" class="nav-link">All Posts</a>
-                        </li>
-                        @foreach($categories as $category)
-                        <li class="nav-item"><a href="{{route('posts.category', $category->id)}}"
-                                class="nav-link">{{$category->name}}</a></li>
-                        @endforeach
-                        @endisset
-                    </ul>
+                    @yield('searchForm')
+
+                    @can('create', App\Models\Post::class)
+                    <div class="m-2"><a href="{{route('posts.create')}}" class="btn btn-primary">Create post</a></div>
+                    <div class="m-2"><a href="{{route('posts.myPost', Auth::user()->id)}}">MyPosts</a></div>
+                    @endcan
 
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ms-auto">
@@ -79,7 +80,7 @@
                                                      document.getElementById('logout-form').submit();">
                                     {{ __('Logout') }}
                                 </a>
-                                
+
 
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                     @csrf
@@ -91,6 +92,21 @@
                 </div>
             </div>
         </nav>
+        <div class="">
+            <ul class="nav justify-content-center bg-white">
+                @isset($categories)
+                <li class="nav-item">
+                    <a href="{{route('posts.index')}}" class="nav-link">All Posts</a>
+                </li>
+                @foreach($categories as $category)
+                <li class="nav-item"><a href="{{route('posts.category', $category->id)}}"
+                        class="nav-link">{{$category->name}}</a></li>
+                @endforeach
+                @endisset
+            </ul>
+        </div>
+
+
         @if ($errors->any())
         <div class="alert alert-danger">
             <ul>
@@ -104,6 +120,11 @@
             @yield('content')
         </main>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
+    </script>
+
 </body>
 
 </html>
